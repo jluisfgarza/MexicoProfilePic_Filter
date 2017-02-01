@@ -1,0 +1,86 @@
+<html>
+	<head>
+		<title>Mexico Profile Pic Filter</title>
+		<meta name="" content="Mexico Profile Pic Filter"/>
+        <link rel="stylesheet" type="text/css" href="style.css">
+
+        
+		<script type="text/javascript">
+            
+		function main() {
+            
+			function nop(e) {
+				e.stopPropagation();
+				e.preventDefault();
+			}
+            
+			function apply_image_filter(image) {
+				var canvas = document.createElement('canvas');
+				canvas.width = image.width;
+				canvas.height = image.height;
+				var ctx = canvas.getContext('2d');
+				ctx.drawImage(image, 0, 0);
+				ctx.globalAlpha = 0.2;
+				var colors = ['#006847', 'white', '#ce1126']
+				var slice = Math.ceil(canvas.width / colors.length);
+                var w = 0;
+				for(var i = 0; i < colors.length; i++) {
+					ctx.fillStyle = colors[i];
+					ctx.fillRect(w, 0, slice, canvas.height);
+                    w = w + slice;
+				}
+				return canvas;
+			}
+            
+			function drop(e) {
+				nop(e);
+				var dropbox = e.target;
+				var reader = new FileReader();
+				reader.onload = function(e) {
+					var image = new Image();
+					image.onload = function(e) {
+						var canvas = apply_image_filter(e.target);
+						dropbox.innerHTML = '';
+						dropbox.style.minHeight = "0px";
+						dropbox.appendChild(canvas);
+					};
+					image.src = e.target.result;
+				};
+				reader.readAsDataURL(e.dataTransfer.files[0]);
+			}
+            
+			var dropbox = document.getElementById('dropbox');
+			dropbox.addEventListener('dragenter', nop, false);
+			dropbox.addEventListener('dragexit', nop, false);
+			dropbox.addEventListener('dragover', nop, false);
+			dropbox.addEventListener('drop', drop, false);
+		}
+        
+        // Alpha
+        /*var Alpha = document.getElementById('dropbox');
+        controls = document.getElementById('controls');
+        controls.onkeyup = controls.onchange = function()
+        {
+        var Alpha = document.getElementById('dropbox'),
+        val = parseInt(this.value) - 50;
+             if (val > 50 || val < -50)
+                return false;
+            Alpha.style.backgroundColor = val > 0 ? 'white' : 'black';
+            Alpha.style.opacity = Math.abs(val/100) * 2;
+        }*/
+            
+		window.onload = main;
+            
+		</script>
+	</head>
+    
+	<body>
+        <div id="container">
+            <div id="dropbox"></div>
+<!--
+            <p>Brightness (0 - 100):</p>
+            <input type="range" id="controls" value="50" min="0" max="100" maxlength="3">
+-->
+        </div>
+	</body>
+</html>
